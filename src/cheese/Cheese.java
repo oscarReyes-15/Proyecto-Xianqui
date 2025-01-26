@@ -11,7 +11,7 @@ public class Cheese {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        GUI f = new GUI();       
+        Frame f = new Frame();       
 
     }
     
