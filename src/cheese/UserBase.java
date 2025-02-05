@@ -31,7 +31,7 @@ public class UserBase {
     }
     
     void addPlayer (String user, String pass) {
-        if (!searchUser(user).equals(user) && pass.length() == 5){
+        if (searchUser(user) == null  && pass.length() == 5){
             int i = searchNull(); 
             Base[i] = new User(user, pass);
             System.out.println(user + " was added!\n");
@@ -55,13 +55,20 @@ public class UserBase {
         System.out.println("Whoops, smth went wrong...\n");
     }
     
-    String searchUser (String user) {
+    User searchUser (String user) {
         for (User player : Base) {
             if (player != null && player.getUser().equals(user)){
-                return player.getUser();
+                return player;
             }
         }
-        return "Player not found :(\n";
+        return null;
+    }
+    
+    boolean validar (String user, String pass) {
+        if (searchUser(user) != null && searchUser(user).getPass().equals(pass)){
+            return true;
+        }
+        return false;
     }
 }
 
