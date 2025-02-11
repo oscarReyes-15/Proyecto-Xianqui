@@ -99,3 +99,22 @@ class User {
     }
     
 }
+
+class Player {
+    private User user;
+    private colorPieza color;
+    
+    public Player (User user, colorPieza color) {
+        this.user = user;
+        this.color = color;
+    }
+    
+    User getPlayer () {
+        return user;
+    }
+    
+    colorPieza getColor () {
+        return color;
+    }
+}
+

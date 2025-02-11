@@ -29,10 +29,11 @@ public class Frame extends JFrame {
 
         C.initInicio();
         add(C);
-        C.revalidate();
-        C.repaint();
         sonidos.setSound(0);
         sonidos.Loop();
+        C.revalidate();
+        C.repaint();
+        
     }
 }
 
@@ -102,11 +103,11 @@ class contentPanel extends JPanel {
         salir.setForeground(Color.WHITE);
         G.gridy = 3;
         salir.addActionListener(e -> {
-            sonidos.setSound(2);
+            sonidos.setSound(1);
             sonidos.Play();
             refresh();
             try {
-                Thread.sleep(3000);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(contentPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
