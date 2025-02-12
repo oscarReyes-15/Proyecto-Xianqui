@@ -19,6 +19,7 @@ public class Board {
     public Board () {
         tablero[9][4] = new General(colorPieza.ROJO, 9, 4);
         tablero[0][4] = new General(colorPieza.NEGRO, 0, 4);
+        
         tablero[7][1] = new Cannon(colorPieza.ROJO, 7, 1);
         tablero[7][7] = new Cannon(colorPieza.ROJO, 7, 7);
         tablero[2][1] = new Cannon(colorPieza.NEGRO, 2, 1);
@@ -27,7 +28,30 @@ public class Board {
         tablero[9][2] = new Elefante(colorPieza.ROJO, 9, 2);
         tablero[9][6] = new Elefante(colorPieza.ROJO, 9, 6);
         tablero[0][2] = new Elefante(colorPieza.NEGRO, 0, 2);
-        tablero[0][6] = new Elefante(colorPieza.NEGRO, 0, 6);        
+        tablero[0][6] = new Elefante(colorPieza.NEGRO, 0, 6);
+
+        tablero[9][1] = new Caballo(colorPieza.ROJO, 9, 1);
+        tablero[9][7] = new Caballo(colorPieza.ROJO, 9, 7);
+        tablero[0][1] = new Caballo(colorPieza.NEGRO, 0, 1);
+        tablero[0][7] = new Caballo(colorPieza.NEGRO, 0, 7);
+        
+        tablero[9][0] = new carroGuerra(colorPieza.ROJO, 9, 0);
+        tablero[9][8] = new carroGuerra(colorPieza.ROJO, 9, 8);
+        tablero[0][0] = new carroGuerra(colorPieza.NEGRO, 0, 0);
+        tablero[0][8] = new carroGuerra(colorPieza.NEGRO, 0, 8);
+        
+        tablero[3][0] = new Soldado(colorPieza.NEGRO, 3, 0);
+        tablero[3][2] = new Soldado(colorPieza.NEGRO, 3, 2);
+        tablero[3][4] = new Soldado(colorPieza.NEGRO, 3, 4);
+        tablero[3][6] = new Soldado(colorPieza.NEGRO, 3, 6);
+        tablero[3][8] = new Soldado(colorPieza.NEGRO, 3, 8);
+        tablero[6][0] = new Soldado(colorPieza.ROJO, 6, 0);
+        tablero[6][2] = new Soldado(colorPieza.ROJO, 6, 2);
+        tablero[6][4] = new Soldado(colorPieza.ROJO, 6, 4);
+        tablero[6][6] = new Soldado(colorPieza.ROJO, 6, 6);
+        tablero[6][8] = new Soldado(colorPieza.ROJO, 6, 8); 
+              
+
     }
     
     // funciones 
@@ -73,20 +97,74 @@ public class Board {
             
     }
     
-    //
-    boolean[][] MovValidos () {
-        boolean[][] update = new boolean[10][9];
+    boolean [][] MovCaballo (boolean[][] update) {
+        // Horse (Knight) movement rules in Xiangqi
+        int[][] coordCaballo = {
+            {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, // Vertical L-moves
+            {1, 2}, {1, -2}, {-1, 2}, {-1, -2}  // Horizontal L-moves
+        };
         
-        System.out.println(currentPieza + " " + x + " " + y);
-        for (int i = 0; i < validos.length; i ++){
-            for (int j = 0 ; j < update[i].length; j++){
-                update[i][j] = currentPieza.isValido(i, j) == true;
-                if (tablero[i][j] != null){
-                    
+        for (int[] move : coordCaballo) {
+            
+            int i = x + move[0];
+            int j = y + move[1];
+
+            // Check board limits
+            if (i >= 0 && i < 10 && j >= 0 && j < 9) {
+                int bloqueX = x + (move[0] / 2); // Pivote X
+                int bloqueY = y + (move[1] / 2); // Pivote Y
+
+                // If the middle step is blocked, the horse cannot move there
+                if (tablero[bloqueX][bloqueY] == null) {
+                    // The final position must be either empty or an enemy piece
+                    if (tablero[i][j] == null || isRed(tablero[i][j]) != turno) {
+                        update[i][j] = true;
+                    }
                 }
             }
         }
-        printValidos(update);
+        return update;
+    }
+    
+    // chequea movimientos validos a travez de direcciones
+    boolean[][] MovValidos () {
+        boolean[][] update = new boolean[10][9];
+        
+        // 
+        int[][] Direc = {
+            {0, 1}, {0, -1}, // derecha e izquierda - destra e sinestra en italiano
+            {1, 0}, {-1, 0}, // arriba y abajo
+            {1, 1}, {-1, 1}, // diagonal abajo (derecha e izquierda)
+            {-1, 1}, {-1, -1} // diagonal arriba (destra e sinestra)
+        };
+        
+        if (currentPieza.getTipo() == tipoPieza.CABALLO){
+            return MovCaballo(update);
+        }
+        for (int[] dir : Direc) {
+        int i = x + dir[0], j = y + dir[1];
+        boolean encontroPieza = false;  // 
+        
+        while (i >= 0 && i < 10 && j >= 0 && j < 9) { // Stay within board bounds
+            if (tablero[i][j] != null) {
+                if (!encontroPieza) { 
+                    // First piece encountered: check if it's an enemy
+                    if (isRed(tablero[i][j]) != turno) {
+                        update[i][j] = currentPieza.isValido(i, j);
+                    }
+                    encontroPieza = true; // Stop further movement
+                } 
+                break; // Stop checking this direction after hitting a piece
+            } 
+            // If no piece encountered yet, mark it as valid
+            update[i][j] = currentPieza.isValido(i, j);
+            
+            // Move further in the same direction
+            i += dir[0];
+            j += dir[1];
+        }
+    }
+       
         return update;
     }
     
@@ -108,8 +186,6 @@ public class Board {
                 if (isRed(tablero[newx][newy]) == turno) {
                     selectPieza(tablero[newx][newy], newx, newy);
                     validos = MovValidos();
-                    System.out.println("selecciono pieza en: " + newx + newy);
-                    return;
                 }
             }
         } else {
@@ -128,34 +204,7 @@ public class Board {
                 validos = resetMov();
                 movePieza(newx, newy);
                 x = -1; y = -1;
-                System.out.println("Movio pieza a: " + newx + newy);
-                printValidos(validos);
-                return;
             }
-        }
-        System.out.println("Nada de nada");
-    }
-
-    void printBoard(){
-        for (Pieza[] p : tablero) {
-            for (Pieza p2 : p) {
-                if (p2 == null){
-                    System.out.print("null ");
-                } else {
-                    System.out.print(/*p2.pieza + " " + */p2.color + " ");
-                }
-            }
-            System.out.println("");
-        }
-    }
-    
-    void printValidos(boolean[][] validos2) {
-        
-        for (boolean[] v : validos2) {
-            for (boolean v2 : v) {
-                System.out.print(v2 + " ");
-            }
-            System.out.println("");
         }
     }
     

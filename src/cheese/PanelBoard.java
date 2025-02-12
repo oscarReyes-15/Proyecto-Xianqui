@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 public class PanelBoard extends JPanel {
     JButton[][] Board = new JButton[10][9];
@@ -57,9 +58,8 @@ public class PanelBoard extends JPanel {
         btn.setFocusable(false);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
-        if(Logica.tablero[x][y] != null){
-            btn.setToolTipText(String.valueOf(Logica.tablero[x][y].getTipo()));
-        }
+        btn.setBorder(new LineBorder(Color.WHITE, 3));
+        
         btn.addActionListener(e -> {
             Logica.Oprimir(x, y);
             iluminar(Logica.validos);
@@ -99,6 +99,8 @@ public class PanelBoard extends JPanel {
                 if(Logica.tablero[i][j] != null){
                     
                     Board[i][j].setIcon(Logica.tablero[i][j].getImage());
+                    Board[i][j].setToolTipText(String.valueOf(Logica.tablero[i][j].getTipo()));
+        
                 }else {
                     Board[i][j].setIcon(null);
                 }

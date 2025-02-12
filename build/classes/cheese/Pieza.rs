@@ -1,0 +1,9 @@
+cheese.General
+cheese.Pieza
+cheese.Caballo
+cheese.Soldado
+cheese.Oficial
+cheese.Cannon
+cheese.Elefante
+cheese.Sol
+cheese.carroGuerra
