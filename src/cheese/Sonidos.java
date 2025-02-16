@@ -9,7 +9,7 @@ import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-public class Sonidos {
+public final class Sonidos {
     //Sounds
     public Clip clip;
     public URL soundLink[] = new URL[6];
@@ -43,7 +43,8 @@ public class Sonidos {
         }
     }
     
-    void Play(){
+    void Play(int n){
+        setSound(n);
         if (clip != null){
             clip.start();
         }

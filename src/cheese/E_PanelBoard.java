@@ -5,19 +5,21 @@ package cheese;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
-public class PanelBoard extends JPanel {
+public final class E_PanelBoard extends JPanel {
     JButton[][] Board = new JButton[10][9];
-    Board Logica;
+    C_Board Logica;
     
-    public PanelBoard (Board Logica) {
+    public E_PanelBoard (C_Board Logica) {
         this.Logica = Logica;
         setLayout(new GridLayout(11, 9));
+        setPreferredSize(new Dimension (600, 600));
         Btns();
         refreshTab();
     }
@@ -69,16 +71,6 @@ public class PanelBoard extends JPanel {
         return btn;
     }
         
-    public static void main(String[] args) {
-        Board B  = new Board();
-
-        JFrame j = new JFrame("Tablero");
-        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        j.setSize(600, 600);
-        j.add(new PanelBoard(B));
-        
-        j.setVisible(true);
-    }
     
     void iluminar (boolean[][] validos) {
         for (int i = 0; i < 10; i++) {
@@ -97,10 +89,8 @@ public class PanelBoard extends JPanel {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 9; j++) {
                 if(Logica.tablero[i][j] != null){
-                    
                     Board[i][j].setIcon(Logica.tablero[i][j].getImage());
-                    Board[i][j].setToolTipText(String.valueOf(Logica.tablero[i][j].getTipo()));
-        
+                    Board[i][j].setToolTipText(String.valueOf(Logica.tablero[i][j].getTipo()));        
                 }else {
                     Board[i][j].setIcon(null);
                 }

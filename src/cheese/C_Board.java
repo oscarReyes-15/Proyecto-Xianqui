@@ -4,19 +4,21 @@
  */
 package cheese;
 
+import java.awt.Dimension;
 
-public class Board {
+
+public class C_Board {
     // Atributos
-    Pieza[][] tablero = new Pieza[10][9];
-    Pieza[] rojoCapturado = new Pieza[14], negroCapturado = new Pieza[14];
-    Pieza currentPieza;
-    boolean[][] validos = new boolean[10][9];
-    boolean turno = true;
-    int x = -1, y = -1;
+    protected Pieza[][] tablero = new Pieza[10][9];
+    protected Pieza[] rojoCapturado = new Pieza[14], negroCapturado = new Pieza[14];
+    public Pieza currentPieza;
+    protected boolean[][] validos = new boolean[10][9];
+    protected boolean turno = true;
+    private int x = -1, y = -1;
     Sonidos s = new Sonidos();
     
     // constructor
-    public Board () {
+    public C_Board () {
         tablero[9][4] = new General(colorPieza.ROJO, 9, 4);
         tablero[0][4] = new General(colorPieza.NEGRO, 0, 4);
         
@@ -69,15 +71,15 @@ public class Board {
     }
     
     void movePieza (int newx, int newy) {
-        s.setSound(3);
         currentPieza.move(newx, newy);
         tablero[newx][newy] = currentPieza;
         tablero[x][y] = null;
         currentPieza = null;
-        s.Play();
+        s.Play(3);
         cambiarTurno();        
     }
     
+    //maneja registrar comer otras piezas 
     void comerPieza (int newx, int newy) {
         if (isRed(tablero[newx][newy]) == true){
             for (int i = 0; i < 10; i++) {
@@ -97,6 +99,7 @@ public class Board {
             
     }
     
+    // chequea movimientos validos a travez de direcciones
     boolean [][] MovCaballo (boolean[][] update) {
         // Horse (Knight) movement rules in Xiangqi
         int[][] coordCaballo = {
@@ -126,7 +129,6 @@ public class Board {
         return update;
     }
     
-    // chequea movimientos validos a travez de direcciones
     boolean[][] MovValidos () {
         boolean[][] update = new boolean[10][9];
         
@@ -163,8 +165,7 @@ public class Board {
             i += dir[0];
             j += dir[1];
         }
-    }
-       
+    }       
         return update;
     }
     
@@ -180,6 +181,7 @@ public class Board {
         return update;
     }
     
+    // Maneja input de botones
     void Oprimir (int newx, int newy ) {
         if (x == -1  &&  y == -1) {
             if (tablero[newx][newy] != null) {
@@ -194,7 +196,7 @@ public class Board {
                     x = -1; y = -1;
                     Oprimir(newx, newy);
                     return;
-                }
+            }
             if (validos[newx][newy] == true) {
                 
                 if (tablero[newx][newy] != null && isRed(tablero[newx][newy]) != turno) {
@@ -206,6 +208,7 @@ public class Board {
                 x = -1; y = -1;
             }
         }
-    }
+    }   
+    
     
 }

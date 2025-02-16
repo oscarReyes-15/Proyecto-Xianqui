@@ -4,13 +4,10 @@
  */
 package cheese;
 
-/**
- *
- * @author LENOVO
- */
+import java.util.Calendar;
 
 public class UserBase {
-    private User [] Base = new User[3];
+    private User [] Base = new User[1];
     
     int searchNull () {
         for (int i = 0; i < Base.length; i++){
@@ -23,7 +20,7 @@ public class UserBase {
     }
     
     User[] expandBase () {
-        User[] DummyArray = new User[Base.length + 2];
+        User[] DummyArray = new User[Base.length + 1];
         for (int i = 0; i < Base.length; i++) {
             DummyArray[i] = Base[i];
         }
@@ -35,24 +32,23 @@ public class UserBase {
             int i = searchNull(); 
             Base[i] = new User(user, pass);
             System.out.println(user + " was added!\n");
-            return;
         }
-        if (pass.length() > 5 || pass.length() < 5){
+        else if (pass.length() > 5 || pass.length() < 5){
             System.out.println("password must be 5 characters long!\n");
-            return;
         }
-        else {System.out.println(user + " is taken!\n"); return;}
+        else {System.out.println(user + " is taken!\n");}
     }
     
-    void removePlayer (String user, String pass) {
+    boolean removePlayer (String user, String pass) {
         for (int i = 0; i < Base.length; i++) {
-            if (Base[i] != null && Base[i].getPass().equals(pass) && Base[i].getUser().equals(user)) {
+            if (validar(user, pass)) {
                 Base[i] = null;
                 System.out.println(user + " was deleted!\n");
-                return;
+                return true;
             }
         }
         System.out.println("Whoops, smth went wrong...\n");
+        return false;
     }
     
     User searchUser (String user) {
@@ -65,21 +61,33 @@ public class UserBase {
     }
     
     boolean validar (String user, String pass) {
-        if (searchUser(user) != null && searchUser(user).getPass().equals(pass)){
-            return true;
-        }
-        return false;
+        User player = searchUser(user);
+        return player != null && player.getPass().equals(pass) && player.getUser().equals(user);
     }
 }
 
 class User {
-    private String user, pass;
+    private final String user;
+    private String pass;
     private int puntos;
+    private final Calendar fechaRegistro;
     
     public User (String user, String pass) {
         this.user = user;
         this.pass = pass;
         this.puntos = 0;
+        fechaRegistro = Calendar.getInstance();
+    }
+    
+    String getFecha () {
+        int anno = fechaRegistro.get(Calendar.YEAR);
+        int mes = fechaRegistro.get(Calendar.MONTH);
+        int dia = fechaRegistro.get(Calendar.DAY_OF_MONTH);
+        int hora = fechaRegistro.get(Calendar.HOUR);
+        int min = fechaRegistro.get(Calendar.MINUTE);
+        int sec = fechaRegistro.get(Calendar.SECOND);
+        
+        return dia + "/" + (mes+1) + "/" + anno + "  -  " + hora + ":" + min + ":" + sec;
     }
     
     String getUser () {
@@ -92,6 +100,10 @@ class User {
     
     int getPuntos () {
         return puntos;
+    }
+    
+    void setPass (String Pass){
+        this.pass = Pass;
     }
     
     void addPuntos () {

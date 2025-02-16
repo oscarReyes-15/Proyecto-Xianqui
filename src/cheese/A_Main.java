@@ -5,13 +5,13 @@
 package cheese;
 
 
-public class Main {
+public class A_Main {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Frame f = new Frame();       
+        B_Frame f = new B_Frame();       
     }
     
 }
