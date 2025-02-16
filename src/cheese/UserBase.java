@@ -4,10 +4,47 @@
  */
 package cheese;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class UserBase {
     private User [] Base = new User[1];
+    
+    String losMejores () {
+
+        String[] array2 = new String[10];
+        User temp;
+        
+
+        for (int i = 0; i < Base.length; i++) {
+            for (int j = 1; j < Base.length; j++) {
+                if (Base[j - 1].getPuntos() < Base[j].getPuntos()){
+                    temp = Base[j];
+                    Base[j] = temp;
+                    Base[j-1] = Base[j];
+                }
+            }
+        }
+
+        int j = 1;
+        for (int i = 0; i < 10; i ++) {
+            
+            
+            if (i >= Base.length) {
+                array2[i] = j + ". - ";
+            }
+            else{
+                if (Base[i] == null){
+                    array2[i] = j + ". - ";
+                } else {
+                array2[i] = j + ". " + Base[i].getUser() + " - " + Base[i].getPuntos();                
+                }
+            } 
+            j++;
+        }
+
+        return String.join("\n", array2);
+    }
     
     int searchNull () {
         for (int i = 0; i < Base.length; i++){
@@ -71,6 +108,7 @@ class User {
     private String pass;
     private int puntos;
     private final Calendar fechaRegistro;
+    private final String[] reporte = new String[10];
     
     public User (String user, String pass) {
         this.user = user;
@@ -102,6 +140,18 @@ class User {
         return puntos;
     }
     
+    String[] getLogs() {
+        int num = 0;
+                
+        for (int i = 0; i < 10; i++ ){
+            if (reporte[i] != null){
+                num++;
+            }
+        }
+        
+        return Arrays.copyOfRange(reporte, num, reporte.length);
+    }
+    
     void setPass (String Pass){
         this.pass = Pass;
     }
@@ -110,6 +160,22 @@ class User {
         puntos += 3;
     }
     
+    private void sortLogs () {
+        for (int i = 1; i < 10; i++) {
+            reporte[i-1] = reporte[i];
+        }
+        reporte[9] = null;
+    }
+    
+    void setLog(String partida) {
+        for (int i = 9; i > -1; i--) {
+            if (reporte[i] == null){
+                reporte[i] = partida;
+                return;
+            }
+            sortLogs();
+        }
+    }
 }
 
 class Player {

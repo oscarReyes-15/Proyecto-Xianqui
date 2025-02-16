@@ -4,7 +4,6 @@
  */
 package cheese;
 
-import java.awt.Dimension;
 
 
 public class C_Board {
@@ -13,9 +12,10 @@ public class C_Board {
     protected Pieza[] rojoCapturado = new Pieza[14], negroCapturado = new Pieza[14];
     public Pieza currentPieza;
     protected boolean[][] validos = new boolean[10][9];
-    protected boolean turno = true;
+    protected boolean turno = true, jaque = false;
     private int x = -1, y = -1;
     Sonidos s = new Sonidos();
+    String registro;
     
     // constructor
     public C_Board () {
@@ -71,6 +71,7 @@ public class C_Board {
     }
     
     void movePieza (int newx, int newy) {
+        registro +=  "\n=" +currentPieza.pieza + " " + currentPieza.color + " se ha movido a " + newx + ", "  + newy;
         currentPieza.move(newx, newy);
         tablero[newx][newy] = currentPieza;
         tablero[x][y] = null;
@@ -85,6 +86,7 @@ public class C_Board {
             for (int i = 0; i < 10; i++) {
                 if (rojoCapturado[i] == null){
                     rojoCapturado[i] = tablero[newx][newy];
+                    registro = "\n" + String.valueOf(tablero[newx][newy].getTipo()) + " " + String.valueOf(tablero[newx][newy].getColor()) + " fue comido por " + String.valueOf(currentPieza.getTipo()) + " " + String.valueOf(currentPieza.getColor());
                     return;
                 }
             }
@@ -93,6 +95,7 @@ public class C_Board {
             for (int i = 0; i < 10; i++) {
                 if (rojoCapturado[i] == null){
                     negroCapturado[i] = tablero[newx][newy];}
+                    registro = String.valueOf(tablero[newx][newy].getTipo()) + " " + String.valueOf(tablero[newx][newy].getColor()) + " fue comido por " + String.valueOf(currentPieza.getTipo()) + " " + String.valueOf(currentPieza.getColor());
                     return;
                 }
             }
@@ -150,7 +153,7 @@ public class C_Board {
         while (i >= 0 && i < 10 && j >= 0 && j < 9) { // Stay within board bounds
             if (tablero[i][j] != null) {
                 if (!encontroPieza) { 
-                    // First piece encountered: check if it's an enemy
+                    
                     if (isRed(tablero[i][j]) != turno) {
                         update[i][j] = currentPieza.isValido(i, j);
                     }
@@ -183,6 +186,9 @@ public class C_Board {
     
     // Maneja input de botones
     void Oprimir (int newx, int newy ) {
+        registro = "";
+        jaque = false;
+        
         if (x == -1  &&  y == -1) {
             if (tablero[newx][newy] != null) {
                 if (isRed(tablero[newx][newy]) == turno) {
@@ -210,5 +216,42 @@ public class C_Board {
         }
     }   
     
+    void MiradasQueMatan () {
+        
+        for (Pieza[] p : tablero) {
+            for (Pieza p2 : p) {
+                if (p2 != null && p2.getTipo() == tipoPieza.GENERAL){
+                    for (int i = 0; i < 10; i++){
+                        if (tablero[i][p2.y] != null){
+                            return;
+                        }
+                        
+                    }
+                    
+                }
+            }
+        }
+    }
     
+    int Fin () {
+        boolean rojoVivo = false, negroVivo = false;
+                
+        
+        for (Pieza[] p : tablero) {
+            for (Pieza p2 : p) {
+                if (p2 != null && p2.getTipo() == tipoPieza.GENERAL && p2.getColor() == colorPieza.ROJO){
+                    rojoVivo = true;
+                } else if (p2 != null && p2.getTipo() == tipoPieza.GENERAL && p2.getColor() == colorPieza.NEGRO){
+                    negroVivo = true;
+                } 
+            }
+        }
+        
+        if (rojoVivo == false && negroVivo == true){
+            return 1; // gana negro
+        }else if (rojoVivo == true && negroVivo == false){
+            return 2; // gana rojo
+            
+        } else {return 3;} // normal
+    }
 }

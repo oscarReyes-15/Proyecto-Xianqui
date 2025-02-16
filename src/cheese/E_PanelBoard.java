@@ -15,9 +15,11 @@ import javax.swing.border.LineBorder;
 public final class E_PanelBoard extends JPanel {
     JButton[][] Board = new JButton[10][9];
     C_Board Logica;
+    D_PanelJuego P;
     
-    public E_PanelBoard (C_Board Logica) {
+    public E_PanelBoard (C_Board Logica, D_PanelJuego P) {
         this.Logica = Logica;
+        this.P = P;
         setLayout(new GridLayout(11, 9));
         setPreferredSize(new Dimension (600, 600));
         Btns();
@@ -65,7 +67,7 @@ public final class E_PanelBoard extends JPanel {
         btn.addActionListener(e -> {
             Logica.Oprimir(x, y);
             iluminar(Logica.validos);
-            refreshTab();
+            P.refreshAll();
         });
                 
         return btn;

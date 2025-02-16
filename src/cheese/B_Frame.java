@@ -5,6 +5,7 @@
 package cheese;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.*;
 import java.util.Scanner;
@@ -12,6 +13,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.util.NoSuchElementException;
 
 
 public class B_Frame extends JFrame {
@@ -29,8 +31,7 @@ public class B_Frame extends JFrame {
 
         C.initInicio();
         add(C);
-        sonidos.setSound(0);
-        sonidos.Loop();
+        sonidos.Play(0);
         C.revalidate();
         C.repaint();
         
@@ -130,26 +131,27 @@ class contentPanel extends JPanel {
         G.fill = GridBagConstraints.HORIZONTAL;
         login.addActionListener(e -> {      
             sonidos.Play(1);
-            
-            if(User.getText() != null && Pass.getPassword() != null){
-                String userText = User.getText();
-                Scanner s = new Scanner(userText);
-                s.useDelimiter("[ \\s ]+");
-                if (!userText.matches("[a-zA-Z0-9]*")){
-                    JOptionPane.showMessageDialog(login, "Advertencia! Todo texto despues de un espacio sera ignorado...", "Cuidado!",JOptionPane.WARNING_MESSAGE);
-                }
-                userText = s.next();
-                String PassText = new String (Pass.getPassword());
+            try{
+                if(User.getText() != null && Pass.getPassword() != null){
+                    String userText = User.getText();
+                    Scanner s = new Scanner(userText);
+                    s.useDelimiter("[ \\s ]+");
+                    if (!userText.matches("[a-zA-Z0-9]*")){
+                        JOptionPane.showMessageDialog(login, "Advertencia! Todo texto despues de un espacio sera ignorado...", "Cuidado!",JOptionPane.WARNING_MESSAGE);
+                    }
+                    userText = s.next();
+                    String PassText = new String (Pass.getPassword());
 
-                if (BaseCentral.validar(userText, PassText) == true){
-                    user = BaseCentral.searchUser(userText);
-                    clean();
-                    System.out.println(userText + ": logged in!");
-                    initMenu();
-                    return;
-                }
-                JOptionPane.showMessageDialog(null, "User o Password equivocados...");
+                    if (BaseCentral.validar(userText, PassText) == true){
+                        user = BaseCentral.searchUser(userText);
+                        clean();
+                        System.out.println(userText + ": logged in!");
+                        initMenu();
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(null, "User o Password equivocados...");
             }
+        } catch (NoSuchElementException f){JOptionPane.showMessageDialog(null, "No deje eso vacio");}
         });
         add(login, G);
 
@@ -171,15 +173,15 @@ class contentPanel extends JPanel {
         JButton crear = Comp.makeBtn("* Crear User *");
         crear.addActionListener(e -> {
             sonidos.Play(1);
-            
-            String userText = User.getText();
-            Scanner s = new Scanner(userText);
-            s.useDelimiter("[ \\s ]+");
-            if (!userText.matches("[a-zA-Z0-9]*")){
-                JOptionPane.showMessageDialog(crear, "Advertencia! Todo texto despues de un espacio sera ignorado...", "Cuidado!",JOptionPane.WARNING_MESSAGE);
-            }
-            userText = s.next();
-            String PassText = new String (Pass.getPassword());
+            try {
+                String userText = User.getText();
+                Scanner s = new Scanner(userText);
+                s.useDelimiter("[ \\s ]+");
+                if (!userText.matches("[a-zA-Z0-9]*")){
+                    JOptionPane.showMessageDialog(crear, "Advertencia! Todo texto despues de un espacio sera ignorado...", "Cuidado!",JOptionPane.WARNING_MESSAGE);
+                }
+                userText = s.next();
+                String PassText = new String (Pass.getPassword());
             
             
             if (PassText.length() != 5){
@@ -195,6 +197,7 @@ class contentPanel extends JPanel {
                 return;
             }
             JOptionPane.showMessageDialog(null, "Usuario ya existe...");
+            } catch (NoSuchElementException f){JOptionPane.showMessageDialog(null, "No deje eso vacio");}
             
         });
         add(crear, Comp.setGBC(G, 0, 3, 3, 0, 0, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
@@ -229,9 +232,9 @@ class contentPanel extends JPanel {
                 JOptionPane.showMessageDialog(null, "No se puede ingresar a usted mismo!" , "Narcicismo", JOptionPane.ERROR_MESSAGE);
             } else {
                 clean();
-                B.setSize(825, 9650);
+                B.setSize(825, 650);
                 B.setLocationRelativeTo(null);
-                add(new D_PanelJuego(new Player(user, colorPieza.ROJO), new Player(user2, colorPieza.NEGRO)));
+                add(new D_PanelJuego(new Player(user, colorPieza.ROJO), new Player(user2, colorPieza.NEGRO), this, B));
                 refresh();
             }
             
@@ -247,6 +250,15 @@ class contentPanel extends JPanel {
         });
         add(cuenta, Comp.setGBC(G, 0, 2, 10, 0, 0, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
 
+        //  reportes
+        JButton reporte = Comp.makeBtn("- Reportes -");
+        reporte.addActionListener(e -> {
+            sonidos.Play(1);
+            clean();
+            Reportes();
+        });
+        add(reporte, Comp.setGBC(G, 0, 4, 10, 0, 0, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
+
         
         //  Salir
         JButton salir = Comp.makeBtn("- Log Out -");
@@ -259,7 +271,7 @@ class contentPanel extends JPanel {
                 initInicio();
             }
         });
-        add(salir, Comp.setGBC(G, 0, 4, 10, 0, 0, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
+        add(salir, Comp.setGBC(G, 0, 5, 10, 0, 0, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
         
         //revalidate
         refresh();
@@ -324,6 +336,33 @@ class contentPanel extends JPanel {
     }
 
     void Reportes() {
+        // 
+        JButton personal = Comp.makeBtn("- Mis partidas -");
+        personal.addActionListener(e -> {
+            String info = String.join("\n", user.getLogs());
+            JOptionPane.showMessageDialog(null, info);
+        });
+        add(personal, Comp.setGBC(G, 0, 1, 10, 0, 0, GridBagConstraints.HORIZONTAL, new Insets(70, 5, 5, 5), GridBagConstraints.CENTER));
+
+        // Ver mi info
+        JButton ranked = Comp.makeBtn("- Top Ranking -");
+        ranked.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, BaseCentral.losMejores());
+        });
+        add(ranked, Comp.setGBC(G, 0, 2, 10, 0, 0, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
+
+        //  Salir
+        JButton salir = Comp.makeBtn("- Regresar -");
+        salir.addActionListener(e -> {
+            sonidos.Play(1);
+            clean();
+            initMenu();
+        });
+        add(salir, Comp.setGBC(G, 0, 3, 10, 0, 0, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), GridBagConstraints.CENTER));
+        
+        
+        //
+        refresh();
     }
 
     void clean () {
@@ -353,6 +392,7 @@ class GUIComp {
         lbl.setForeground(Color.WHITE);     
         return lbl;
     }
+    
 
     GridBagConstraints setGBC (GridBagConstraints G, int x, int y, int GrW, int WX, int WY, int fill, Insets I, int Anch) {
         G.gridx = x;    // 
